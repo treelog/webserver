@@ -15,6 +15,19 @@ def add_user(db, user_inform):
     return True
 
 def add_user_projects(db, user_id, project):
-    user = db['users'].find({'id': user_id})
-    user['projects'].append(project)
+    user = db['users'].find_one({'id': user_id})
+    if project in user['projects']:
+        return False
+    db['users'].update_one({'id': user_id}, {'$push': {'projects': project}})
+    return True
 
+def remove_user_projects(db, user_id, project):
+    user = db['users'].find_one({'id': user_id})
+    projects = user['projects'].remove(project)
+    if projects is None:
+        projects = []
+    db['users'].update_one({'id': user_id}, {'$set': {'projects': projects}})
+
+def load_user_inform(db, user_id):
+    user = db['users'].find_one({'id': user_id})
+    return user
