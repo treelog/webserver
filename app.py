@@ -1,11 +1,13 @@
-from flask import Flask, render_template, request, redirect, url_for, make_response, session
+from flask import Flask, render_template, request, redirect, url_for, make_response, session, send_from_directory
 from pymongo import MongoClient
 from db import add_user, init_db, add_user_projects, remove_user_projects, load_user_inform
 from datetime import timedelta
+import os
 
 client = MongoClient('localhost', 27017)
 db = client.ntrack
 init_db(db)
+IMAGE_DIR = 'C:/Users/최준영/Pictures/test'
 
 app = Flask(__name__)
 app.secret_key = 'secretkey'
@@ -98,6 +100,25 @@ def deleteprojecthandler():
         #project = {'project_name': project_name, 'tracked': False}
         return redirect(url_for('index2'))
 
+@app.route('/projecthandler', methods=['GET', 'POST'])
+def projecthandler():
+    if request.method == 'POST':
+        project_name = request.form['project_name']
+        print(project_name)
+        return redirect(url_for('project', project_name=project_name))
+
+@app.route('/project/<project_name>')
+def project(project_name):
+    if 'id' in session:
+        id = session['id']
+        user = db['users'].find_one({'id': id})
+        images = os.listdir(IMAGE_DIR)
+        return render_template('project.html', user=user, project_name=project_name, images=images)
+
+@app.route("/images/<path:path>")
+def send_image(path):
+    print(path)
+    return send_from_directory(IMAGE_DIR, path)
 
 @app.route('/charts')
 def charts():

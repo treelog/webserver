@@ -49,7 +49,7 @@
                                 {% for i in range(len) %}
                                     <div class="col-xl-3 col-md-6">
                                         <div class="card bg-success text-white mb-4">
-                                            <form action="/projects" method="POST">
+                                            <form action="/projecthandler" method="POST">
                                                 <input type="hidden" name="project_name" value="{{user['projects'][i]['project_name']}}">
                                                 <div class="card-body">{{user['projects'][i]['project_name']}}</div>
                                                 <div class="card-footer d-flex align-items-center justify-content-between">
